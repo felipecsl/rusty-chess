@@ -1,10 +1,8 @@
-mod piece;
-mod player;
-mod board;
+mod engine;
 
-use piece::Color;
-use player::Player;
-use board::Board;
+use engine::player::Player;
+use engine::board::Board;
+use engine::piece::Color;
 
 pub fn main() {
   let board = Board {

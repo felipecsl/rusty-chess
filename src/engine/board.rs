@@ -1,6 +1,6 @@
-use piece::Piece;
-use piece::PieceType;
-use player::Player;
+use engine::piece::Piece;
+use engine::piece::PieceType;
+use engine::player::Player;
 
 pub struct Board {
   pub player1: Player,

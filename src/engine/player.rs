@@ -1,6 +1,6 @@
-use piece::Piece;
-use piece::PieceType;
-use piece::Color;
+use engine::piece::Piece;
+use engine::piece::PieceType;
+use engine::piece::Color;
 
 pub struct Player {
   pub pieces: Vec<Piece>,
