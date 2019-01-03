@@ -72,6 +72,7 @@ impl Board {
         };
       }
     }
+    context.set_fill_style(&JsValue::from("white"));
     for y in 6..8 {
       for x in 0..8 {
         let x_pos = square_size * x as f64;
