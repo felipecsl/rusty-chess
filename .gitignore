@@ -1,4 +1,7 @@
 target/
 bin/
 pkg/
+node_modules
+.bin/
 *.log
+dist/
