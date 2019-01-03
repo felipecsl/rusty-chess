@@ -2,6 +2,7 @@ extern crate cfg_if;
 extern crate wasm_bindgen;
 
 mod utils;
+mod engine;
 
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
@@ -43,10 +44,6 @@ pub fn start() {
 fn draw_board() {
   let document = web_sys::window().unwrap().document().unwrap();
   let canvas = document.get_element_by_id("canvas").unwrap();
-  let canvas_size = 320.0;
-  let color_1 = "#f4d9b0";
-  let color_2 = "#bc865c";
-  let square_size = canvas_size / 8.0;
   let canvas: web_sys::HtmlCanvasElement = canvas
       .dyn_into::<web_sys::HtmlCanvasElement>()
       .map_err(|_| ())
@@ -57,14 +54,6 @@ fn draw_board() {
       .unwrap()
       .dyn_into::<web_sys::CanvasRenderingContext2d>()
       .unwrap();
-  context.set_line_width(2.0);
-  context.stroke_rect(0.0, 0.0, canvas_size, canvas_size);
-  for y in 0..8 {
-    for x in 0..8 {
-      let color = if (x + y) % 2 == 0 { color_1 } else { color_2 };
-      context.set_fill_style(&JsValue::from(color));
-      context.fill_rect(
-        square_size * x as f64, square_size * y as f64, square_size, square_size);
-    }
-  }
+  let board = engine::board::new_board();
+  board.print_to_canvas(&context);
 }
