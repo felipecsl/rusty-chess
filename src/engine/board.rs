@@ -13,14 +13,10 @@ impl Board {
   #[allow(dead_code)]
   pub fn print_to_canvas(&self) {
     let all_pieces = self.all_pieces();
-    let canvas_size = 600.0;
-    let piece_size = canvas_size / 10.0;
-    let square_size = canvas_size / 8.0;
     let canvas_board = CanvasBoard {
       board: &self,
       all_pieces: &all_pieces,
-      square_size,
-      piece_size,
+      size: 600.0,
     };
     canvas_board.print();
   }
