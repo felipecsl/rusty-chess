@@ -5,3 +5,4 @@ node_modules
 .bin/
 *.log
 dist/
+.DS_Store

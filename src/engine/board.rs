@@ -1,10 +1,8 @@
-extern crate wasm_bindgen;
-
 use engine::piece::Piece;
 use engine::piece::PieceType;
 use engine::player::Player;
 use engine::piece::Color;
-use engine::board::wasm_bindgen::prelude::*;
+use engine::canvas_board::CanvasBoard;
 
 pub struct Board {
   pub player1: Player,
@@ -12,78 +10,19 @@ pub struct Board {
 }
 
 impl Board {
-  pub fn print_to_stdout(&self) {
-    let all_pieces = self.all_pieces();
-    print!("┏");
-    for _ in 0..7 {
-      print!("━━━┳");
-    }
-    println!("━━━┓");
-    for y in 0..8 {
-      print!("┃");
-      for x in 0..8 {
-        let piece = self.piece_at(&all_pieces, x, y);
-        print!(" {} ┃", piece_to_str(piece));
-      }
-      println!();
-      if y < 7 {
-        print!("┣");
-        for _ in 0..7 {
-          print!("━━━╋");
-        }
-        print!("━━━┫");
-        println!();
-      }
-    }
-    print!("┗");
-    for _ in 0..7 {
-      print!("━━━┻");
-    }
-    println!("━━━┛");
-    println!();
-  }
-
-  pub fn print_to_canvas(&self, context: &web_sys::CanvasRenderingContext2d) {
+  #[allow(dead_code)]
+  pub fn print_to_canvas(&self) {
     let all_pieces = self.all_pieces();
     let canvas_size = 600.0;
     let piece_size = canvas_size / 10.0;
-    let color_1 = "#f4d9b0";
-    let color_2 = "#bc865c";
     let square_size = canvas_size / 8.0;
-    context.set_font(&format!("{}px Courier New", piece_size));
-    for y in 0..8 {
-      for x in 0..8 {
-        let color = if (x + y) % 2 == 0 { color_1 } else { color_2 };
-        context.set_fill_style(&JsValue::from(color));
-        let x_pos = square_size * x as f64;
-        let y_pos = square_size * y as f64;
-        context.fill_rect(x_pos, y_pos, square_size, square_size);
-      }
-    }
-    context.set_fill_style(&JsValue::from("black"));
-    for y in 0..2 {
-      for x in 0..8 {
-        let x_pos = square_size * x as f64;
-        let y_pos = square_size * y as f64;
-        let piece = self.piece_at(&all_pieces, x, y);
-        match context.fill_text(&piece_to_str(piece), x_pos + 7.0, y_pos + piece_size) {
-          Err(_) => println!("Failed to write text"),
-          Ok(_) => (),
-        };
-      }
-    }
-    context.set_fill_style(&JsValue::from("white"));
-    for y in 6..8 {
-      for x in 0..8 {
-        let x_pos = square_size * x as f64;
-        let y_pos = square_size * y as f64;
-        let piece = self.piece_at(&all_pieces, x, y);
-        match context.fill_text(&piece_to_str(piece), x_pos + 7.0, y_pos + piece_size) {
-          Err(_) => println!("Failed to write text"),
-          Ok(_) => (),
-        };
-      }
-    }
+    let canvas_board = CanvasBoard {
+      board: &self,
+      all_pieces: &all_pieces,
+      square_size,
+      piece_size,
+    };
+    canvas_board.print();
   }
 
   fn all_pieces(&self) -> Vec<&Piece> {
@@ -93,7 +32,7 @@ impl Board {
     return all_pieces;
   }
 
-  fn piece_at<'a>(&'a self, all_pieces: &'a Vec<&Piece>, x: u32, y: u32) -> Option<&Piece> {
+  pub fn piece_at<'a>(&'a self, all_pieces: &'a Vec<&Piece>, x: u32, y: u32) -> Option<&Piece> {
     let matches = all_pieces.iter()
       .filter(|&p| p.pos == (x, y))
       .collect::<Vec<&&Piece>>();
@@ -101,7 +40,7 @@ impl Board {
   }
 }
 
-fn piece_to_str(piece: Option<&Piece>) -> String {
+pub fn piece_to_str(piece: Option<&Piece>) -> String {
   match piece {
     Some(ref piece) => {
       if piece.is_black() {

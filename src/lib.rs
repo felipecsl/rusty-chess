@@ -6,7 +6,6 @@ mod engine;
 
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 
 cfg_if! {
   // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -38,22 +37,6 @@ extern {
 
 #[wasm_bindgen(start)]
 pub fn start() {
-  draw_board();
-}
-
-fn draw_board() {
-  let document = web_sys::window().unwrap().document().unwrap();
-  let canvas = document.get_element_by_id("canvas").unwrap();
-  let canvas: web_sys::HtmlCanvasElement = canvas
-      .dyn_into::<web_sys::HtmlCanvasElement>()
-      .map_err(|_| ())
-      .unwrap();
-  let context = canvas
-      .get_context("2d")
-      .unwrap()
-      .unwrap()
-      .dyn_into::<web_sys::CanvasRenderingContext2d>()
-      .unwrap();
   let board = engine::board::new_board();
-  board.print_to_canvas(&context);
+  board.print_to_canvas();
 }
