@@ -2,25 +2,14 @@ use engine::piece::Piece;
 use engine::piece::PieceType;
 use engine::player::Player;
 use engine::piece::Color;
-use engine::canvas_board::CanvasBoard;
 
+#[derive(Clone)]
 pub struct Board {
   pub player1: Player,
   pub player2: Player,
 }
 
 impl Board {
-  #[allow(dead_code)]
-  pub fn print_to_canvas(&self) {
-    let all_pieces = self.all_pieces();
-    let canvas_board = CanvasBoard {
-      board: &self,
-      all_pieces: &all_pieces,
-      size: 600.0,
-    };
-    canvas_board.print();
-  }
-
   fn all_pieces(&self) -> Vec<&Piece> {
     let mut all_pieces = Vec::with_capacity(32);
     all_pieces.extend(&self.player1.pieces);
@@ -28,7 +17,12 @@ impl Board {
     return all_pieces;
   }
 
-  pub fn piece_at<'a>(&'a self, all_pieces: &'a Vec<&Piece>, x: u32, y: u32) -> Option<&Piece> {
+  pub fn piece_at<'a>(
+      &'a self,
+      x: u32,
+      y: u32
+  ) -> Option<&Piece> {
+    let all_pieces = self.all_pieces();
     let matches = all_pieces.iter()
       .filter(|&p| p.pos == (x, y))
       .collect::<Vec<&&Piece>>();

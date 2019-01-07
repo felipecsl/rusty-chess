@@ -2,6 +2,7 @@ use engine::piece::Piece;
 use engine::piece::PieceType;
 use engine::piece::Color;
 
+#[derive(Clone)]
 pub struct Player {
   pub pieces: Vec<Piece>,
 }
