@@ -1,7 +1,7 @@
+use engine::piece::Color;
 use engine::piece::Piece;
 use engine::piece::PieceType;
 use engine::player::Player;
-use engine::piece::Color;
 
 #[derive(Clone)]
 pub struct Board {
@@ -17,13 +17,10 @@ impl Board {
     return all_pieces;
   }
 
-  pub fn piece_at<'a>(
-      &'a self,
-      x: u32,
-      y: u32
-  ) -> Option<&Piece> {
+  pub fn piece_at<'a>(&'a self, x: u32, y: u32) -> Option<&Piece> {
     let all_pieces = self.all_pieces();
-    let matches = all_pieces.iter()
+    let matches = all_pieces
+      .iter()
       .filter(|&p| p.pos == (x, y))
       .collect::<Vec<&&Piece>>();
     return matches.first().map(|&p| *p);
@@ -38,7 +35,7 @@ pub fn piece_to_str(piece: Option<&Piece>) -> String {
       } else {
         white_piece_to_str(&piece)
       }
-    },
+    }
     None => String::from(" "),
   }
 }

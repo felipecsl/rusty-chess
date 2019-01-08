@@ -1,9 +1,9 @@
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use engine::board::*;
 use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
+use engine::board::*;
 use std::rc::Rc;
 use PIECE_SIZE;
 use SQUARE_SIZE;
@@ -47,11 +47,7 @@ impl CanvasBoardRenderer {
     let x_pos = SQUARE_SIZE * x as f64;
     let y_pos = SQUARE_SIZE * y as f64;
     let piece = self.board.piece_at(x, y);
-    match context.fill_text(
-      &piece_to_str(piece),
-      x_pos + 7.0,
-      y_pos + PIECE_SIZE
-    ) {
+    match context.fill_text(&piece_to_str(piece), x_pos + 7.0, y_pos + PIECE_SIZE) {
       Err(_) => println!("Failed to write text"),
       Ok(_) => (),
     };

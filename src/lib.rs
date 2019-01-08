@@ -2,16 +2,16 @@ extern crate cfg_if;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-mod utils;
 mod engine;
+mod utils;
 
-use cfg_if::cfg_if;
 use self::wasm_bindgen::prelude::*;
 use self::wasm_bindgen::JsCast;
+use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
 use self::web_sys::MouseEvent;
-use self::web_sys::CanvasRenderingContext2d;
+use cfg_if::cfg_if;
 use engine::canvas_board::CanvasBoardRenderer;
 use std::rc::Rc;
 
@@ -26,7 +26,7 @@ cfg_if! {
 }
 
 #[wasm_bindgen]
-extern {
+extern "C" {
   // Use `js_namespace` here to bind `console.log(..)` instead of just
   // `log(..)`
   #[wasm_bindgen(js_namespace = console)]
@@ -63,7 +63,7 @@ pub fn start() {
     let piece = board.piece_at(x, y);
     match piece {
       Some(p) => log(&format!("Clicked piece {:?}", p)),
-      None    => log("no piece on this position"),
+      None => log("no piece on this position"),
     };
   };
   bind_click_handler(&canvas, click_handler);
@@ -76,20 +76,25 @@ fn get_document() -> Document {
 
 fn get_canvas(document: &Document) -> HtmlCanvasElement {
   let element = document.get_element_by_id("canvas").unwrap();
-  element.dyn_into::<HtmlCanvasElement>()
-      .map_err(|_| ())
-      .unwrap()
+  element
+    .dyn_into::<HtmlCanvasElement>()
+    .map_err(|_| ())
+    .unwrap()
 }
 
 fn init_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
-  canvas.get_context("2d")
-      .unwrap()
-      .unwrap()
-      .dyn_into::<CanvasRenderingContext2d>()
-      .unwrap()
+  canvas
+    .get_context("2d")
+    .unwrap()
+    .unwrap()
+    .dyn_into::<CanvasRenderingContext2d>()
+    .unwrap()
 }
 
-fn bind_click_handler<F: 'static>(canvas: &HtmlCanvasElement, func: F) where F: Fn(MouseEvent) {
+fn bind_click_handler<F: 'static>(canvas: &HtmlCanvasElement, func: F)
+where
+  F: Fn(MouseEvent),
+{
   let closure = Closure::wrap(Box::new(func) as Box<dyn Fn(_)>);
   let res = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref());
   match res {

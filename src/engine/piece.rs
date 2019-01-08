@@ -1,6 +1,7 @@
 #[derive(PartialEq, Debug, Clone)]
 pub enum Color {
-  Black, White
+  Black,
+  White,
 }
 
 #[derive(Debug, Clone)]
