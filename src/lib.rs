@@ -13,6 +13,7 @@ use self::web_sys::HtmlCanvasElement;
 use self::web_sys::MouseEvent;
 use self::web_sys::CanvasRenderingContext2d;
 use engine::canvas_board::CanvasBoardRenderer;
+use std::rc::Rc;
 
 cfg_if! {
   // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -52,14 +53,18 @@ pub fn start() {
   let document = get_document();
   let canvas = get_canvas(&document);
   let context = init_context(&canvas);
-  let board = engine::board::new_board();
+  let board = Rc::new(engine::board::new_board());
   let canvas_board_renderer = CanvasBoardRenderer {
     board: board.clone(),
   };
   let click_handler = move |event: MouseEvent| {
     let x = event.offset_x() as u32 / SQUARE_SIZE as u32;
     let y = event.offset_y() as u32 / SQUARE_SIZE as u32;
-    log(&format!("Click piece {:?}", board.piece_at(x, y).unwrap()));
+    let piece = board.piece_at(x, y);
+    match piece {
+      Some(p) => log(&format!("Clicked piece {:?}", p)),
+      None    => log("no piece on this position"),
+    };
   };
   bind_click_handler(&canvas, click_handler);
   canvas_board_renderer.render(&context);

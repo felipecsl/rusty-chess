@@ -4,12 +4,13 @@ extern crate web_sys;
 use engine::board::*;
 use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
+use std::rc::Rc;
 use PIECE_SIZE;
 use SQUARE_SIZE;
 
 #[allow(dead_code)]
 pub struct CanvasBoardRenderer {
-  pub board: Board,
+  pub board: Rc<Board>,
 }
 
 impl CanvasBoardRenderer {
