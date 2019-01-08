@@ -12,6 +12,7 @@ use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
 use self::web_sys::MouseEvent;
 use cfg_if::cfg_if;
+use engine::board::Board;
 use engine::canvas_board::CanvasBoardRenderer;
 use std::rc::Rc;
 
@@ -57,7 +58,13 @@ pub fn start() {
   let canvas_board_renderer = CanvasBoardRenderer {
     board: board.clone(),
   };
-  let click_handler = move |event: MouseEvent| {
+  let click_handler = new_onclick_handler(board);
+  bind_click_handler(&canvas, click_handler);
+  canvas_board_renderer.render(&context);
+}
+
+fn new_onclick_handler(board: Rc<Board>) -> Box<dyn Fn(MouseEvent)> {
+  Box::new(move |event: MouseEvent| {
     let x = event.offset_x() as u32 / SQUARE_SIZE as u32;
     let y = event.offset_y() as u32 / SQUARE_SIZE as u32;
     let piece = board.piece_at(x, y);
@@ -65,9 +72,7 @@ pub fn start() {
       Some(p) => log(&format!("Clicked piece {:?}", p)),
       None => log("no piece on this position"),
     };
-  };
-  bind_click_handler(&canvas, click_handler);
-  canvas_board_renderer.render(&context);
+  })
 }
 
 fn get_document() -> Document {
@@ -91,11 +96,8 @@ fn init_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
     .unwrap()
 }
 
-fn bind_click_handler<F: 'static>(canvas: &HtmlCanvasElement, func: F)
-where
-  F: Fn(MouseEvent),
-{
-  let closure = Closure::wrap(Box::new(func) as Box<dyn Fn(_)>);
+fn bind_click_handler(canvas: &HtmlCanvasElement, func: Box<dyn Fn(MouseEvent)>) {
+  let closure = Closure::wrap(func);
   let res = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref());
   match res {
     Ok(_) => (),
