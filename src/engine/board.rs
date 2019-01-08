@@ -17,7 +17,7 @@ impl Board {
     return all_pieces;
   }
 
-  pub fn piece_at<'a>(&'a self, x: u32, y: u32) -> Option<&Piece> {
+  pub fn piece_at(&self, x: u32, y: u32) -> Option<&Piece> {
     let all_pieces = self.all_pieces();
     let matches = all_pieces
       .iter()
