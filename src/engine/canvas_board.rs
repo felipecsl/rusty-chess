@@ -42,7 +42,7 @@ impl<'a> CanvasBoardRenderer<'a> {
         let x_pos = SQUARE_SIZE * x as f64;
         let y_pos = SQUARE_SIZE * y as f64;
         let piece = self.board.piece_at(x, y);
-        if self.valid_moves.contains(&(x, y)) || (piece != None && self.selected_piece == piece) {
+        if (self.valid_moves.contains(&(x, y)) && piece == None) || (piece != None && self.selected_piece == piece) {
           context.set_fill_style(&JsValue::from(color_selected));
         } else {
           context.set_fill_style(&JsValue::from(color));
