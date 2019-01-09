@@ -12,7 +12,7 @@ use self::web_sys::CanvasRenderingContext2d;
 
 static COLOR_1: &str = "#f4d9b0";
 static COLOR_2: &str = "#bc865c";
-static COLOR_SELECTED_1: &str = "#c1a680";
+static COLOR_SELECTED_1: &str = "#f6fbd3";
 static COLOR_SELECTED_2: &str = "#895329";
 
 #[allow(dead_code)]

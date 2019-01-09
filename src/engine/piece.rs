@@ -69,9 +69,9 @@ impl<'a> Piece<'a> {
     let x = self.x();
     let y = self.y();
     if self.is_black() {
-      ret.extend(&[(x, y + 1), (x, y + 2), (x, y + 3), (x - 1, y + 3), (x + 1, y + 3)]);
+      ret.extend(&[(x - 1, y + 2), (x + 1, y + 2)]);
     } else {
-      ret.extend(&[(x, y - 1), (x, y - 2), (x, y - 3), (x - 1, y - 3), (x + 1, y - 3)]);
+      ret.extend(&[(x - 1, y - 2), (x + 1, y - 2)]);
     }
     return ret;
   }
