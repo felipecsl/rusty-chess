@@ -42,7 +42,11 @@ impl<'a> CanvasBoardRenderer<'a> {
         let x_pos = SQUARE_SIZE * x as f64;
         let y_pos = SQUARE_SIZE * y as f64;
         let piece = self.board.piece_at(x, y);
-        if (self.valid_moves.contains(&(x, y)) && piece == None) || (piece != None && self.selected_piece == piece) {
+        // -> position highlighting rules:
+        // 1. only highlight position if it's currently vacant (no piece already there)
+        // 2. mark the position of the currently selected piece (if any)
+        if (self.valid_moves.contains(&(x, y)) && piece == None)
+          || (piece != None && self.selected_piece == piece) {
           context.set_fill_style(&JsValue::from(color_selected));
         } else {
           context.set_fill_style(&JsValue::from(color));
