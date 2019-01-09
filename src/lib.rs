@@ -71,7 +71,7 @@ fn new_onclick_handler(board: Rc<Board<'static>>) -> Box<dyn Fn(MouseEvent)> {
     match piece {
       Some(p) => {
         let valid_moves = board.valid_moves_for_piece(p);
-        log(&format!("Clicked piece {:?}, valid moves: {}", p, valid_moves))
+        log(&format!("Clicked piece {:?}, valid moves: {:?}", p, valid_moves));
       },
       None => log("no piece on this position"),
     };

@@ -25,6 +25,10 @@ impl<'a> Board<'a> {
     return matches.first().map(|&p| *p);
   }
 
+  pub fn valid_moves_for_piece(&self, piece: &Piece) -> Vec<(u32, u32)> {
+    piece.valid_moves()
+  }
+
   fn all_pieces(&self) -> Vec<&Piece> {
     let p1 = &self.player1.pieces;
     let p2 = &self.player2.pieces;
