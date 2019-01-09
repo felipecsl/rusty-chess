@@ -4,17 +4,16 @@ use engine::piece::PieceType;
 use engine::player::Player;
 
 #[derive(Clone)]
-pub struct Board {
-  pub player1: Player,
-  pub player2: Player,
+pub struct Board<'a> {
+  player1: Player<'a>,
+  player2: Player<'a>,
 }
 
-impl Board {
-  fn all_pieces(&self) -> Vec<&Piece> {
-    let mut all_pieces = Vec::with_capacity(32);
-    all_pieces.extend(&self.player1.pieces);
-    all_pieces.extend(&self.player2.pieces);
-    return all_pieces;
+impl<'a> Board<'a> {
+  pub fn new() -> Board<'a> {
+    let player1 = Player::new(&Color::Black);
+    let player2 = Player::new(&Color::White);
+    Board { player1, player2 }
   }
 
   pub fn piece_at(&self, x: u32, y: u32) -> Option<&Piece> {
@@ -24,6 +23,15 @@ impl Board {
       .filter(|&p| p.pos == (x, y))
       .collect::<Vec<&&Piece>>();
     return matches.first().map(|&p| *p);
+  }
+
+  fn all_pieces(&self) -> Vec<&Piece> {
+    let p1 = &self.player1.pieces;
+    let p2 = &self.player2.pieces;
+    let mut all_pieces = Vec::with_capacity(p1.len() + p2.len());
+    all_pieces.extend(p1);
+    all_pieces.extend(p2);
+    return all_pieces;
   }
 }
 
@@ -60,11 +68,4 @@ fn white_piece_to_str(piece: &Piece) -> String {
     PieceType::Queen => "♕",
     PieceType::Pawn => "♙",
   })
-}
-
-pub fn new_board() -> Board {
-  Board {
-    player1: Player::new(&Color::Black),
-    player2: Player::new(&Color::White),
-  }
 }

@@ -9,11 +9,11 @@ use PIECE_SIZE;
 use SQUARE_SIZE;
 
 #[allow(dead_code)]
-pub struct CanvasBoardRenderer {
-  pub board: Rc<Board>,
+pub struct CanvasBoardRenderer<'a> {
+  pub board: Rc<Board<'a>>,
 }
 
-impl CanvasBoardRenderer {
+impl<'a> CanvasBoardRenderer<'a> {
   #[allow(dead_code)]
   pub fn render(&self, context: &CanvasRenderingContext2d) {
     let color_1 = "#f4d9b0";

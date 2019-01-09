@@ -15,13 +15,13 @@ pub enum PieceType {
 }
 
 #[derive(Debug, Clone)]
-pub struct Piece {
+pub struct Piece<'a> {
   pub piece_type: PieceType,
-  pub color: &'static Color,
+  pub color: &'a Color,
   pub pos: (u32, u32),
 }
 
-impl Piece {
+impl<'a> Piece<'a> {
   pub fn is_black(&self) -> bool {
     *self.color == Color::Black
   }

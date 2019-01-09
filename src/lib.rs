@@ -54,7 +54,7 @@ pub fn start() {
   let document = get_document();
   let canvas = get_canvas(&document);
   let context = init_context(&canvas);
-  let board = Rc::new(engine::board::new_board());
+  let board = Rc::new(Board::new());
   let canvas_board_renderer = CanvasBoardRenderer {
     board: board.clone(),
   };
@@ -63,13 +63,16 @@ pub fn start() {
   canvas_board_renderer.render(&context);
 }
 
-fn new_onclick_handler(board: Rc<Board>) -> Box<dyn Fn(MouseEvent)> {
+fn new_onclick_handler(board: Rc<Board<'static>>) -> Box<dyn Fn(MouseEvent)> {
   Box::new(move |event: MouseEvent| {
     let x = event.offset_x() as u32 / SQUARE_SIZE as u32;
     let y = event.offset_y() as u32 / SQUARE_SIZE as u32;
     let piece = board.piece_at(x, y);
     match piece {
-      Some(p) => log(&format!("Clicked piece {:?}", p)),
+      Some(p) => {
+        let valid_moves = board.valid_moves_for_piece(p);
+        log(&format!("Clicked piece {:?}, valid moves: {}", p, valid_moves))
+      },
       None => log("no piece on this position"),
     };
   })
