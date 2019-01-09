@@ -6,13 +6,9 @@ use cfg_if::cfg_if;
 
 use engine::board::Board;
 use engine::canvas_board::CanvasBoardRenderer;
+use engine::game_controller::GameController;
 
-use self::wasm_bindgen::JsCast;
 use self::wasm_bindgen::prelude::*;
-use self::web_sys::CanvasRenderingContext2d;
-use self::web_sys::Document;
-use self::web_sys::HtmlCanvasElement;
-use self::web_sys::MouseEvent;
 
 mod engine;
 mod utils;
@@ -52,59 +48,12 @@ static PIECE_SIZE: f64 = CANVAS_SIZE / 10.0;
 
 #[wasm_bindgen(start)]
 pub fn start() {
-  let document = get_document();
-  let canvas = get_canvas(&document);
-  let context = init_context(&canvas);
+  let controller = GameController::new();
   let board = Box::new(Board::new());
+  // We need the Board object to live for the entire duration of the program.
+  // Thus, we leak it to obtain a 'static reference
   let board_ref = Box::leak(board);
   let renderer = CanvasBoardRenderer::new(board_ref);
-  renderer.render(&context);
-  let click_handler = new_onclick_handler(board_ref, renderer);
-  bind_click_handler(&canvas, click_handler);
-}
-
-fn new_onclick_handler<'a>(
-  board: &'static Board<'a>,
-  mut renderer: CanvasBoardRenderer<'a>,
-) -> Box<dyn FnMut(web_sys::MouseEvent)> {
-  Box::new(move |event: MouseEvent| {
-    let x = event.offset_x() as u32 / SQUARE_SIZE as u32;
-    let y = event.offset_y() as u32 / SQUARE_SIZE as u32;
-    let piece = board.piece_at(x, y);
-    match piece {
-      Some(p) => renderer.select_piece(&p),
-      None => log("no piece on this position"),
-    };
-  })
-}
-
-fn get_document() -> Document {
-  web_sys::window().unwrap().document().unwrap()
-}
-
-fn get_canvas(document: &Document) -> HtmlCanvasElement {
-  let element = document.get_element_by_id("canvas").unwrap();
-  element
-    .dyn_into::<HtmlCanvasElement>()
-    .map_err(|_| ())
-    .unwrap()
-}
-
-fn init_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
-  canvas
-    .get_context("2d")
-    .unwrap()
-    .unwrap()
-    .dyn_into::<CanvasRenderingContext2d>()
-    .unwrap()
-}
-
-fn bind_click_handler(canvas: &HtmlCanvasElement, func: Box<dyn FnMut(MouseEvent)>) {
-  let closure = Closure::wrap(func);
-  let res = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref());
-  match res {
-    Ok(_) => (),
-    Err(_) => panic!("Failed to add click event listener"),
-  }
-  closure.forget();
+  renderer.render(controller.context);
+  controller.bind_event_handlers(board_ref, renderer);
 }

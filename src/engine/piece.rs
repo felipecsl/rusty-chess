@@ -4,7 +4,7 @@ pub enum Color {
   White,
 }
 
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum PieceType {
   Pawn,
   Knight,
@@ -14,7 +14,7 @@ pub enum PieceType {
   Rook,
 }
 
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Piece<'a> {
   pub piece_type: PieceType,
   pub color: &'a Color,
