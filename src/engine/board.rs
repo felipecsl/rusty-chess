@@ -16,17 +16,13 @@ impl<'a> Board<'a> {
     Board { player1, player2 }
   }
 
-  pub fn piece_at(&self, x: u32, y: u32) -> Option<&Piece> {
+  pub fn piece_at(&self, x: u32, y: u32) -> Option<&'a Piece> {
     let all_pieces = self.all_pieces();
     let matches = all_pieces
       .iter()
       .filter(|&p| p.pos == (x, y))
       .collect::<Vec<&&Piece>>();
     return matches.first().map(|&p| *p);
-  }
-
-  pub fn valid_moves_for_piece(&self, piece: &Piece) -> Vec<(u32, u32)> {
-    piece.valid_moves()
   }
 
   fn all_pieces(&self) -> Vec<&Piece> {

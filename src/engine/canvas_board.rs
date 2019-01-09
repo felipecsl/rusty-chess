@@ -4,16 +4,22 @@ extern crate web_sys;
 use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
 use engine::board::*;
-use std::rc::Rc;
 use PIECE_SIZE;
 use SQUARE_SIZE;
+use engine::piece::Piece;
+use log;
 
 #[allow(dead_code)]
 pub struct CanvasBoardRenderer<'a> {
-  pub board: Rc<Board<'a>>,
+  pub board: &'a Board<'a>,
+  selected_piece: Option<&'a Piece<'a>>,
 }
 
 impl<'a> CanvasBoardRenderer<'a> {
+  pub fn new(board: &'a Board<'a>) -> CanvasBoardRenderer<'a> {
+    CanvasBoardRenderer { board, selected_piece: None }
+  }
+
   #[allow(dead_code)]
   pub fn render(&self, context: &CanvasRenderingContext2d) {
     let color_1 = "#f4d9b0";
@@ -41,6 +47,12 @@ impl<'a> CanvasBoardRenderer<'a> {
         self.draw_piece_at(x, y, context);
       }
     }
+  }
+
+  pub fn select_piece(&mut self, piece: &'a Piece<'a>) {
+    let valid_moves = piece.valid_moves();
+    self.selected_piece = Some(piece);
+    log(&format!("Selected piece {:?}, valid moves: {:?}", piece, valid_moves));
   }
 
   fn draw_piece_at(&self, x: u32, y: u32, context: &CanvasRenderingContext2d) {

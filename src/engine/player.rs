@@ -21,86 +21,22 @@ impl<'a> Player<'a> {
     let pawn_pos = (y_offset + pawn_offset) as u32;
     let pos = (1 + y_offset + offset) as u32;
     vec![
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (0, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (1, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (2, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (3, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (4, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (5, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (6, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Pawn,
-        color,
-        pos: (7, pawn_pos),
-      },
-      Piece {
-        piece_type: PieceType::Rook,
-        color,
-        pos: (0, pos),
-      },
-      Piece {
-        piece_type: PieceType::Knight,
-        color,
-        pos: (1, pos),
-      },
-      Piece {
-        piece_type: PieceType::Bishop,
-        color,
-        pos: (2, pos),
-      },
-      Piece {
-        piece_type: PieceType::Queen,
-        color,
-        pos: (3, pos),
-      },
-      Piece {
-        piece_type: PieceType::King,
-        color,
-        pos: (4, pos),
-      },
-      Piece {
-        piece_type: PieceType::Bishop,
-        color,
-        pos: (5, pos),
-      },
-      Piece {
-        piece_type: PieceType::Knight,
-        color,
-        pos: (6, pos),
-      },
-      Piece {
-        piece_type: PieceType::Rook,
-        color,
-        pos: (7, pos),
-      },
+      Piece::new(PieceType::Pawn, color, (0, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (1, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (2, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (3, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (4, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (5, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (6, pawn_pos)),
+      Piece::new(PieceType::Pawn, color, (7, pawn_pos)),
+      Piece::new(PieceType::Rook, color, (0, pos)),
+      Piece::new(PieceType::Knight, color, (1, pos)),
+      Piece::new(PieceType::Bishop, color, (2, pos)),
+      Piece::new(PieceType::Queen, color, (3, pos)),
+      Piece::new(PieceType::King, color, (4, pos)),
+      Piece::new(PieceType::Bishop, color, (5, pos)),
+      Piece::new(PieceType::Knight, color, (6, pos)),
+      Piece::new(PieceType::Rook, color, (7, pos)),
     ]
   }
 }

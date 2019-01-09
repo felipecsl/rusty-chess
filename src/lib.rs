@@ -2,19 +2,20 @@ extern crate cfg_if;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-mod engine;
-mod utils;
+use cfg_if::cfg_if;
 
-use self::wasm_bindgen::prelude::*;
+use engine::board::Board;
+use engine::canvas_board::CanvasBoardRenderer;
+
 use self::wasm_bindgen::JsCast;
+use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
 use self::web_sys::MouseEvent;
-use cfg_if::cfg_if;
-use engine::board::Board;
-use engine::canvas_board::CanvasBoardRenderer;
-use std::rc::Rc;
+
+mod engine;
+mod utils;
 
 cfg_if! {
   // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -54,25 +55,24 @@ pub fn start() {
   let document = get_document();
   let canvas = get_canvas(&document);
   let context = init_context(&canvas);
-  let board = Rc::new(Board::new());
-  let canvas_board_renderer = CanvasBoardRenderer {
-    board: board.clone(),
-  };
-  let click_handler = new_onclick_handler(board);
+  let board = Box::new(Board::new());
+  let static_board_ref: &'static mut Board = Box::leak(board);
+  let renderer = CanvasBoardRenderer::new(static_board_ref);
+  renderer.render(&context);
+  let click_handler = new_onclick_handler(static_board_ref, renderer);
   bind_click_handler(&canvas, click_handler);
-  canvas_board_renderer.render(&context);
 }
 
-fn new_onclick_handler(board: Rc<Board<'static>>) -> Box<dyn Fn(MouseEvent)> {
+fn new_onclick_handler<'a>(
+  board: &'static Board<'a>,
+  mut renderer: CanvasBoardRenderer<'a>,
+) -> Box<dyn FnMut(web_sys::MouseEvent)> {
   Box::new(move |event: MouseEvent| {
     let x = event.offset_x() as u32 / SQUARE_SIZE as u32;
     let y = event.offset_y() as u32 / SQUARE_SIZE as u32;
     let piece = board.piece_at(x, y);
     match piece {
-      Some(p) => {
-        let valid_moves = board.valid_moves_for_piece(p);
-        log(&format!("Clicked piece {:?}, valid moves: {:?}", p, valid_moves));
-      },
+      Some(p) => renderer.select_piece(&p),
       None => log("no piece on this position"),
     };
   })
@@ -99,7 +99,7 @@ fn init_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
     .unwrap()
 }
 
-fn bind_click_handler(canvas: &HtmlCanvasElement, func: Box<dyn Fn(MouseEvent)>) {
+fn bind_click_handler(canvas: &HtmlCanvasElement, func: Box<dyn FnMut(MouseEvent)>) {
   let closure = Closure::wrap(func);
   let res = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref());
   match res {
