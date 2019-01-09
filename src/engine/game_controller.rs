@@ -21,7 +21,7 @@ pub struct GameController {
 
 impl GameController {
   pub fn new() -> GameController {
-    let document = GameController::get_document();
+    let document = web_sys::window().unwrap().document().unwrap();
     let canvas = GameController::get_canvas(&document);
     let context = Box::new(GameController::init_context(&canvas));
     GameController { canvas, context: Box::leak(context), }
@@ -30,10 +30,6 @@ impl GameController {
   pub fn bind_event_handlers(&self, board: &'static Board, renderer: CanvasBoardRenderer<'static>) {
     let click_handler = GameController::new_onclick_handler(board, self.context, renderer);
     self.bind_click_handler(click_handler);
-  }
-
-  fn get_document() -> Document {
-    web_sys::window().unwrap().document().unwrap()
   }
 
   fn get_canvas(document: &Document) -> HtmlCanvasElement {
@@ -66,6 +62,7 @@ impl GameController {
         Some(p) => renderer.select_piece(&p),
         None => log("no piece on this position"),
       };
+      // Re-draw the board to reflect changes (eg.: selected piece, move, etc)
       renderer.render(&context);
     })
   }

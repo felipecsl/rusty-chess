@@ -78,12 +78,19 @@ impl<'a> Piece<'a> {
   fn pawn_moves(&self) -> Vec<(u32, u32)> {
     // TODO: Handle edges of the board
     let x = self.x();
-    let extra_move = if self.total_moves == 0 { 1 } else { 0 };
-    let y = if self.is_black() {
-      self.y() + 1 + extra_move
+    let extra_move = if self.total_moves == 0 { true } else { false };
+    let mut ret = vec![];
+    if self.is_black() {
+      ret.push((x, self.y() + 1));
+      if extra_move {
+        ret.push((x, self.y() + 2));
+      }
     } else {
-      self.y() - 1 - extra_move
+      ret.push((x, self.y() - 1));
+      if extra_move {
+        ret.push((x, self.y() - 2));
+      }
     };
-    return vec![(x, y)];
+    return ret;
   }
 }
