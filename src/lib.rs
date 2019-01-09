@@ -56,10 +56,10 @@ pub fn start() {
   let canvas = get_canvas(&document);
   let context = init_context(&canvas);
   let board = Box::new(Board::new());
-  let static_board_ref: &'static mut Board = Box::leak(board);
-  let renderer = CanvasBoardRenderer::new(static_board_ref);
+  let board_ref = Box::leak(board);
+  let renderer = CanvasBoardRenderer::new(board_ref);
   renderer.render(&context);
-  let click_handler = new_onclick_handler(static_board_ref, renderer);
+  let click_handler = new_onclick_handler(board_ref, renderer);
   bind_click_handler(&canvas, click_handler);
 }
 
