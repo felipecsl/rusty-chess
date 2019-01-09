@@ -64,7 +64,16 @@ impl<'a> Piece<'a> {
   }
 
   fn knight_moves(&self) -> Vec<(u32, u32)> {
-    vec![]
+    // TODO: Handle edges of the board and piece collision
+    let mut ret = vec![];
+    let x = self.x();
+    let y = self.y();
+    if self.is_black() {
+      ret.extend([(x, y + 1), (x, y + 2), (x, y + 3), (x - 1, y + 3)]);
+    } else {
+      ret.extend([(x, y - 1), (x, y - 2), (x, y - 3), (x - 1, y - 3)]);
+    }
+    return ret;
   }
 
   fn queen_moves(&self) -> Vec<(u32, u32)> {
@@ -76,19 +85,20 @@ impl<'a> Piece<'a> {
   }
 
   fn pawn_moves(&self) -> Vec<(u32, u32)> {
-    // TODO: Handle edges of the board
+    // TODO: Handle edges of the board and piece collision
     let x = self.x();
+    let y = self.y();
     let extra_move = if self.total_moves == 0 { true } else { false };
     let mut ret = vec![];
     if self.is_black() {
-      ret.push((x, self.y() + 1));
+      ret.push((x, y + 1));
       if extra_move {
-        ret.push((x, self.y() + 2));
+        ret.push((x, y + 2));
       }
     } else {
-      ret.push((x, self.y() - 1));
+      ret.push((x, y - 1));
       if extra_move {
-        ret.push((x, self.y() - 2));
+        ret.push((x, y - 2));
       }
     };
     return ret;
