@@ -2,8 +2,8 @@ extern crate wasm_bindgen;
 extern crate web_sys;
 
 use engine::board::Board;
-use engine::canvas_board::CanvasBoardRenderer;
 use engine::canvas_board::piece_at;
+use engine::canvas_board::CanvasBoardRenderer;
 
 pub struct GameController<'a> {
   renderer: &'a mut CanvasBoardRenderer<'a>,
@@ -11,7 +11,10 @@ pub struct GameController<'a> {
 }
 
 impl<'a> GameController<'a> {
-  pub fn new(renderer: &'a mut CanvasBoardRenderer<'a>, board: &'a mut Board) -> GameController<'a> {
+  pub fn new(
+    renderer: &'a mut CanvasBoardRenderer<'a>,
+    board: &'a mut Board,
+  ) -> GameController<'a> {
     GameController { renderer, board }
   }
 
@@ -24,7 +27,7 @@ impl<'a> GameController<'a> {
     let piece = piece_at(&all_pieces, x, y);
     if piece == None {
       if self.renderer.can_selected_piece_move_to(x, y) {
-//        self.board.update_piece_pos(self.renderer.selected_piece.unwrap(), (x, y));
+        //        self.board.update_piece_pos(self.renderer.selected_piece.unwrap(), (x, y));
       }
     } else {
       self.renderer.select_piece(piece);

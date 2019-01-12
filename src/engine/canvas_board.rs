@@ -53,8 +53,8 @@ impl<'a> CanvasBoardRenderer<'a> {
         // 2. mark the position of the currently selected piece (if any)
         if (self.valid_moves.contains(&(x, y)) && piece == None)
           || (piece != None
-          && self.selected_piece != None
-          && self.selected_piece.unwrap() == piece.unwrap())
+            && self.selected_piece != None
+            && self.selected_piece.unwrap() == piece.unwrap())
         {
           self.context.set_fill_style(&JsValue::from(color_selected));
         } else {
@@ -76,7 +76,10 @@ impl<'a> CanvasBoardRenderer<'a> {
       let y = piece.pos.1;
       let x_pos = SQUARE_SIZE * x as f64;
       let y_pos = SQUARE_SIZE * y as f64;
-      match self.context.fill_text(&piece_to_str(Some(piece)), x_pos + 7.0, y_pos + PIECE_SIZE) {
+      match self
+        .context
+        .fill_text(&piece_to_str(Some(piece)), x_pos + 7.0, y_pos + PIECE_SIZE)
+      {
         Err(_) => log("Failed to write text"),
         Ok(_) => (),
       };
@@ -92,7 +95,9 @@ impl<'a> CanvasBoardRenderer<'a> {
     } else {
       self.selected_piece = piece;
       //      log(&format!("Selected piece {:?}, valid moves: {:?}", self.selected_piece, valid_moves));
-      self.valid_moves.extend(self.selected_piece.unwrap().valid_moves());
+      self
+        .valid_moves
+        .extend(self.selected_piece.unwrap().valid_moves());
     }
   }
 
@@ -107,7 +112,5 @@ impl<'a> CanvasBoardRenderer<'a> {
 }
 
 pub fn piece_at<'a>(all_pieces: &Vec<&'a Piece>, x: u32, y: u32) -> Option<&'a Piece> {
-  return all_pieces.iter()
-    .map(|&p| p)
-    .find(|&p| p.pos == (x, y));
+  return all_pieces.iter().map(|&p| p).find(|&p| p.pos == (x, y));
 }

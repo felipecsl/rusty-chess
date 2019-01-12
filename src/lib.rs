@@ -7,8 +7,8 @@ use cfg_if::cfg_if;
 use engine::canvas_board::CanvasBoardRenderer;
 use engine::game_controller::GameController;
 
-use self::wasm_bindgen::JsCast;
 use self::wasm_bindgen::prelude::*;
+use self::wasm_bindgen::JsCast;
 use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
