@@ -13,7 +13,6 @@ use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
 use self::web_sys::MouseEvent;
-use engine::board::Board;
 
 mod engine;
 mod utils;
@@ -58,9 +57,7 @@ pub fn start() {
   let context = init_context(&canvas);
   let renderer = Box::new(CanvasBoardRenderer::new(context));
   let renderer_ref = Box::leak(renderer);
-  let board = Box::new(Board::new());
-  let board_ref = Box::leak(board);
-  let controller = GameController::new(renderer_ref, board_ref);
+  let controller = GameController::new(renderer_ref);
   controller.render();
   let func = new_onclick_event(controller);
   let closure = Closure::wrap(func);

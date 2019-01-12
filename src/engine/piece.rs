@@ -32,6 +32,36 @@ impl Piece {
     }
   }
 
+  pub fn to_str(&self) -> String {
+    if self.is_black() {
+      self.black_piece_to_str()
+    } else {
+      self.white_piece_to_str()
+    }
+  }
+
+  fn black_piece_to_str(&self) -> String {
+    String::from(match self.piece_type {
+      PieceType::Rook => "♜",
+      PieceType::Bishop => "♝",
+      PieceType::Knight => "♞",
+      PieceType::King => "♚",
+      PieceType::Queen => "♛",
+      PieceType::Pawn => "♟",
+    })
+  }
+
+  fn white_piece_to_str(&self) -> String {
+    String::from(match self.piece_type {
+      PieceType::Rook => "♖",
+      PieceType::Bishop => "♗",
+      PieceType::Knight => "♘",
+      PieceType::King => "♔",
+      PieceType::Queen => "♕",
+      PieceType::Pawn => "♙",
+    })
+  }
+
   pub fn is_black(&self) -> bool {
     self.color == Color::Black
   }
