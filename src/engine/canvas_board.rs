@@ -17,78 +17,97 @@ static COLOR_SELECTED_2: &str = "#895329";
 
 #[allow(dead_code)]
 pub struct CanvasBoardRenderer<'a> {
-  board: &'a Board<'a>,
-  selected_piece: Option<&'a Piece<'a>>,
+  context: CanvasRenderingContext2d,
+  pub selected_piece: Option<&'a Piece>,
   valid_moves: Vec<(u32, u32)>,
 }
 
 impl<'a> CanvasBoardRenderer<'a> {
-  pub fn new(board: &'a Board<'a>) -> CanvasBoardRenderer<'a> {
+  pub fn new(context: CanvasRenderingContext2d) -> CanvasBoardRenderer<'a> {
     CanvasBoardRenderer {
-      board,
+      context,
       selected_piece: None,
       valid_moves: vec![],
     }
   }
 
   #[allow(dead_code)]
-  pub fn render(&self, context: &CanvasRenderingContext2d) {
-    context.set_font(&format!("{}px Courier New", PIECE_SIZE));
+  pub fn render(&self, all_pieces: &Vec<&Piece>) {
+    self
+      .context
+      .set_font(&format!("{}px Courier New", PIECE_SIZE));
     for y in 0..8 {
       for x in 0..8 {
         let option_1 = (x + y) % 2 == 0;
         let color = if option_1 { COLOR_1 } else { COLOR_2 };
-        let color_selected = if option_1 { COLOR_SELECTED_1 } else { COLOR_SELECTED_2 };
+        let color_selected = if option_1 {
+          COLOR_SELECTED_1
+        } else {
+          COLOR_SELECTED_2
+        };
         let x_pos = SQUARE_SIZE * x as f64;
         let y_pos = SQUARE_SIZE * y as f64;
-        let piece = self.board.piece_at(x, y);
+        let piece = piece_at(all_pieces, x, y);
         // -> position highlighting rules:
         // 1. only highlight position if it's currently vacant (no piece already there)
         // 2. mark the position of the currently selected piece (if any)
         if (self.valid_moves.contains(&(x, y)) && piece == None)
-          || (piece != None && self.selected_piece == piece) {
-          context.set_fill_style(&JsValue::from(color_selected));
+          || (piece != None
+          && self.selected_piece != None
+          && self.selected_piece.unwrap() == piece.unwrap())
+        {
+          self.context.set_fill_style(&JsValue::from(color_selected));
         } else {
-          context.set_fill_style(&JsValue::from(color));
+          self.context.set_fill_style(&JsValue::from(color));
         }
-        context.fill_rect(x_pos, y_pos, SQUARE_SIZE, SQUARE_SIZE);
+        self
+          .context
+          .fill_rect(x_pos, y_pos, SQUARE_SIZE, SQUARE_SIZE);
       }
     }
-    context.set_fill_style(&JsValue::from("black"));
-    for y in 0..2 {
-      for x in 0..8 {
-        self.draw_piece_at(x, y, context);
-      }
-    }
-    context.set_fill_style(&JsValue::from("white"));
-    for y in 6..8 {
-      for x in 0..8 {
-        self.draw_piece_at(x, y, context);
-      }
+    for piece in all_pieces {
+      let color = if piece.is_black() {
+        JsValue::from("black")
+      } else {
+        JsValue::from("white")
+      };
+      self.context.set_fill_style(&color);
+      let x = piece.pos.0;
+      let y = piece.pos.1;
+      let x_pos = SQUARE_SIZE * x as f64;
+      let y_pos = SQUARE_SIZE * y as f64;
+      match self.context.fill_text(&piece_to_str(Some(piece)), x_pos + 7.0, y_pos + PIECE_SIZE) {
+        Err(_) => log("Failed to write text"),
+        Ok(_) => (),
+      };
     }
   }
 
   /* Marks the provided piece as currently selected */
-  pub fn select_piece(&mut self, piece: &'a Piece<'a>) {
+  pub fn select_piece(&mut self, piece: Option<&'a Piece>) {
     self.valid_moves.clear();
-    if Some(piece) == self.selected_piece {
+    if piece == self.selected_piece {
       // Clear selected piece if reselected
       self.selected_piece = None
     } else {
-      let valid_moves = piece.valid_moves();
-      log(&format!("Selected piece {:?}, valid moves: {:?}", piece, valid_moves));
-      self.selected_piece = Some(piece);
-      self.valid_moves.extend(valid_moves);
+      self.selected_piece = piece;
+      //      log(&format!("Selected piece {:?}, valid moves: {:?}", self.selected_piece, valid_moves));
+      self.valid_moves.extend(self.selected_piece.unwrap().valid_moves());
     }
   }
 
-  fn draw_piece_at(&self, x: u32, y: u32, context: &CanvasRenderingContext2d) {
-    let x_pos = SQUARE_SIZE * x as f64;
-    let y_pos = SQUARE_SIZE * y as f64;
-    let piece = self.board.piece_at(x, y);
-    match context.fill_text(&piece_to_str(piece), x_pos + 7.0, y_pos + PIECE_SIZE) {
-      Err(_) => log("Failed to write text"),
-      Ok(_) => (),
-    };
+  pub fn can_selected_piece_move_to(&self, x: u32, y: u32) -> bool {
+    if let Some(ref piece) = self.selected_piece {
+      if self.valid_moves.contains(&(x, y)) {
+        return true;
+      }
+    }
+    return false;
   }
+}
+
+pub fn piece_at<'a>(all_pieces: &Vec<&'a Piece>, x: u32, y: u32) -> Option<&'a Piece> {
+  return all_pieces.iter()
+    .map(|&p| p)
+    .find(|&p| p.pos == (x, y));
 }

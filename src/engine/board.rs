@@ -4,28 +4,27 @@ use engine::piece::PieceType;
 use engine::player::Player;
 
 #[derive(Clone)]
-pub struct Board<'a> {
-  player1: Player<'a>,
-  player2: Player<'a>,
+pub struct Board {
+  player1: Player,
+  player2: Player,
 }
 
-impl<'a> Board<'a> {
-  pub fn new() -> Board<'a> {
-    let player1 = Player::new(&Color::Black);
-    let player2 = Player::new(&Color::White);
+impl Board {
+  pub fn new() -> Board {
+    let player1 = Player::new(Color::Black);
+    let player2 = Player::new(Color::White);
     Board { player1, player2 }
   }
 
-  pub fn piece_at(&self, x: u32, y: u32) -> Option<&'a Piece> {
-    let all_pieces = self.all_pieces();
-    let matches = all_pieces
-      .iter()
-      .filter(|&p| p.pos == (x, y))
-      .collect::<Vec<&&Piece>>();
-    return matches.first().map(|&p| *p);
+  pub fn update_piece_pos(&mut self, piece: &Piece, new_pos: (u32, u32)) {
+    if self.player1.pieces.contains(piece) {
+      self.player1.update_piece_pos(piece, new_pos);
+    } else {
+      self.player2.update_piece_pos(piece, new_pos);
+    }
   }
 
-  fn all_pieces(&self) -> Vec<&Piece> {
+  pub fn all_pieces(&self) -> Vec<&Piece> {
     let p1 = &self.player1.pieces;
     let p2 = &self.player2.pieces;
     let mut all_pieces = Vec::with_capacity(p1.len() + p2.len());

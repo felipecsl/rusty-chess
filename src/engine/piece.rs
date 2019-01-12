@@ -1,4 +1,4 @@
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Color {
   Black,
   White,
@@ -15,25 +15,25 @@ pub enum PieceType {
 }
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct Piece<'a> {
+pub struct Piece {
   pub piece_type: PieceType,
-  pub color: &'a Color,
+  pub color: Color,
   pub pos: (u32, u32),
   total_moves: u32,
 }
 
-impl<'a> Piece<'a> {
-  pub fn new(piece_type: PieceType, color: &Color, pos: (u32, u32)) -> Piece {
+impl Piece {
+  pub fn new(piece_type: PieceType, color: Color, pos: (u32, u32)) -> Piece {
     Piece {
       piece_type,
       color,
       pos,
-      total_moves: 0
+      total_moves: 0,
     }
   }
 
   pub fn is_black(&self) -> bool {
-    *self.color == Color::Black
+    self.color == Color::Black
   }
 
   fn x(&self) -> u32 {

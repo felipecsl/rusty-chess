@@ -3,21 +3,25 @@ use engine::piece::Piece;
 use engine::piece::PieceType;
 
 #[derive(Clone)]
-pub struct Player<'a> {
-  pub color: &'a Color,
-  pub pieces: Vec<Piece<'a>>,
+pub struct Player {
+  pub color: Color,
+  pub pieces: Vec<Piece>,
 }
 
-impl<'a> Player<'a> {
-  pub fn new(color: &Color) -> Player {
+impl Player {
+  pub fn new(color: Color) -> Player {
     let pieces = Player::init_pieces(color);
     Player { color, pieces }
   }
 
-  fn init_pieces(color: &'a Color) -> Vec<Piece> {
-    let y_offset = if *color == Color::Black { 0 } else { 6 };
-    let pawn_offset = if *color == Color::Black { 1 } else { 0 };
-    let offset: i32 = if *color == Color::Black { -1 } else { 0 };
+  pub fn update_piece_pos(&mut self, piece: &Piece, new_pos: (u32, u32)) {
+    // TODO
+  }
+
+  fn init_pieces(color: Color) -> Vec<Piece> {
+    let y_offset = if color == Color::Black { 0 } else { 6 };
+    let pawn_offset = if color == Color::Black { 1 } else { 0 };
+    let offset: i32 = if color == Color::Black { -1 } else { 0 };
     let pawn_pos = (y_offset + pawn_offset) as u32;
     let pos = (1 + y_offset + offset) as u32;
     vec![
