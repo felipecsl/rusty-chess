@@ -80,13 +80,12 @@ impl CanvasBoardRenderer {
       let x_pos = SQUARE_SIZE * x as f64;
       let y_pos = SQUARE_SIZE * y as f64;
       let text = &piece_to_str(Some(piece));
-      match self
+      if let Err(_) = self
         .context
         .fill_text(text, x_pos + 7.0, y_pos + PIECE_SIZE)
       {
-        Err(_) => log("Failed to write text"),
-        Ok(_) => (),
-      };
+        log("Failed to write text");
+      }
     }
   }
 
@@ -101,12 +100,11 @@ impl CanvasBoardRenderer {
       self.selected_piece = None
     } else {
       self.selected_piece = piece;
-      //log(&format!("Selected piece {:?}, valid moves: {:?}", self.selected_piece, valid_moves));
     }
   }
 
   pub fn can_selected_piece_move_to(&self, x: u32, y: u32) -> bool {
-    if let Some(ref piece) = self.selected_piece {
+    if let Some(_) = self.selected_piece {
       let valid_moves = self.selected_piece().unwrap().valid_moves();
       if valid_moves.contains(&(x, y)) {
         return true;

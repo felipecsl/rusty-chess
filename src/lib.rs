@@ -7,8 +7,8 @@ use cfg_if::cfg_if;
 use engine::canvas_board::CanvasBoardRenderer;
 use engine::game_controller::GameController;
 
-use self::wasm_bindgen::prelude::*;
 use self::wasm_bindgen::JsCast;
+use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
@@ -73,10 +73,8 @@ fn new_onclick_event(mut controller: GameController<'static>) -> Box<FnMut(Mouse
 }
 
 fn add_click_handler(canvas: &HtmlCanvasElement, closure: Closure<dyn FnMut(MouseEvent)>) {
-  let res = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref());
-  match res {
-    Ok(_) => (),
-    Err(_) => panic!("Failed to add click event listener"),
+  if let Err(_) = canvas.add_event_listener_with_callback("click", closure.as_ref().unchecked_ref()) {
+    panic!("Failed to add click event listener");
   }
   closure.forget();
 }

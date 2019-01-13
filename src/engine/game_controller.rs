@@ -54,10 +54,10 @@ impl<'a> GameController<'a> {
 }
 
 fn all_pieces() -> Vec<Piece> {
-  let mut p1 = init_pieces(Color::Black);
+  let mut ret = init_pieces(Color::Black);
   let mut p2 = init_pieces(Color::White);
-  p1.append(&mut p2);
-  return p1;
+  ret.append(&mut p2);
+  return ret;
 }
 
 fn init_pieces(color: Color) -> Vec<Piece> {

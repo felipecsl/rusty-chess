@@ -90,7 +90,16 @@ impl Piece {
   }
 
   fn bishop_moves(&self) -> Vec<(u32, u32)> {
-    vec![]
+    let mut ret = vec![];
+    let x = self.x();
+    let y = self.y();
+    for r in 1..8 {
+      ret.push((x + r, y + r));
+      ret.push((x - r, y + r));
+      ret.push((x + r, y - r));
+      ret.push((x - r, y - r));
+    }
+    return ret;
   }
 
   fn knight_moves(&self) -> Vec<(u32, u32)> {
@@ -99,9 +108,27 @@ impl Piece {
     let x = self.x();
     let y = self.y();
     if self.is_black() {
-      ret.extend(&[(x - 1, y + 2), (x + 1, y + 2)]);
+      ret.extend(&[
+        (x - 1, y + 2),
+        (x + 1, y + 2),
+        (x - 1, y - 2),
+        (x + 1, y - 2),
+        (x - 2, y + 1),
+        (x + 2, y + 1),
+        (x - 2, y - 1),
+        (x + 2, y - 1),
+      ]);
     } else {
-      ret.extend(&[(x - 1, y - 2), (x + 1, y - 2)]);
+      ret.extend(&[
+        (x - 1, y + 2),
+        (x + 1, y + 2),
+        (x - 1, y - 2),
+        (x + 1, y - 2),
+        (x - 2, y + 1),
+        (x + 2, y + 1),
+        (x - 2, y - 1),
+        (x + 2, y - 1),
+      ]);
     }
     return ret;
   }
