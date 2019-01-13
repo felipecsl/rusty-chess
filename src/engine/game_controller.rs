@@ -36,7 +36,7 @@ impl<'a> GameController<'a> {
     let all_pieces_clone = self.all_pieces.clone();
     let piece = piece_at(&all_pieces_clone, x, y);
     if piece == None {
-      if self.renderer.can_selected_piece_move_to(x, y) {
+      if self.renderer.can_selected_piece_move_to(&all_pieces_clone, x, y) {
         let selected_piece = self.renderer.selected_piece().unwrap();
         let p = self
           .all_pieces

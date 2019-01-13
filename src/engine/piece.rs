@@ -74,10 +74,10 @@ impl Piece {
     self.pos.1
   }
 
-  pub fn valid_moves(&self) -> Vec<(u32, u32)> {
+  pub fn valid_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     match self.piece_type {
-      PieceType::Rook => self.rook_moves(),
-      PieceType::Bishop => self.bishop_moves(),
+      PieceType::Rook => self.rook_moves(used_positions),
+      PieceType::Bishop => self.bishop_moves(used_positions),
       PieceType::Knight => self.knight_moves(),
       PieceType::King => self.king_moves(),
       PieceType::Queen => self.queen_moves(),
@@ -85,19 +85,47 @@ impl Piece {
     }
   }
 
-  fn rook_moves(&self) -> Vec<(u32, u32)> {
+  fn rook_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     vec![]
   }
 
-  fn bishop_moves(&self) -> Vec<(u32, u32)> {
+  fn bishop_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     let mut ret = vec![];
     let x = self.x();
     let y = self.y();
+    let mut bottom_right_blocked = false;
+    let mut bottom_left_blocked = false;
+    let mut top_right_blocked = false;
+    let mut top_left_blocked = false;
     for r in 1..8 {
-      ret.push((x + r, y + r));
-      ret.push((x - r, y + r));
-      ret.push((x + r, y - r));
-      ret.push((x - r, y - r));
+      let pos_bottom_right = (x + r, y + r);
+      if !bottom_right_blocked {
+        bottom_right_blocked = used_positions.contains(&pos_bottom_right);
+        if !bottom_right_blocked {
+          ret.push(pos_bottom_right);
+        }
+      }
+      let pos_bottom_left = (x - r, y + r);
+      if !bottom_left_blocked {
+        bottom_left_blocked = used_positions.contains(&pos_bottom_left);
+        if !bottom_left_blocked {
+          ret.push(pos_bottom_left);
+        }
+      }
+      let pos_top_right = (x + r, y - r);
+      if !top_right_blocked {
+        top_right_blocked = used_positions.contains(&pos_top_right);
+        if !top_right_blocked {
+          ret.push(pos_top_right);
+        }
+      }
+      let pos_top_left = (x - r, y - r);
+      if !top_left_blocked {
+        top_left_blocked = used_positions.contains(&pos_top_left);
+        if !top_left_blocked {
+          ret.push(pos_top_left);
+        }
+      }
     }
     return ret;
   }
