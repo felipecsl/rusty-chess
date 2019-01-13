@@ -36,7 +36,10 @@ impl<'a> GameController<'a> {
     let all_pieces_clone = self.all_pieces.clone();
     let piece = piece_at(&all_pieces_clone, x, y);
     if piece == None {
-      if self.renderer.can_selected_piece_move_to(&all_pieces_clone, x, y) {
+      if self
+        .renderer
+        .can_selected_piece_move_to(&all_pieces_clone, x, y)
+      {
         self.move_selected_piece_to(x, y);
       }
     } else {

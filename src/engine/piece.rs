@@ -74,18 +74,18 @@ impl Piece {
     self.pos.1
   }
 
-  pub fn valid_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  pub fn valid_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     match self.piece_type {
       PieceType::Rook => self.rook_moves(used_positions),
       PieceType::Bishop => self.bishop_moves(used_positions),
       PieceType::Knight => self.knight_moves(),
       PieceType::King => self.king_moves(),
-      PieceType::Queen => self.queen_moves(),
+      PieceType::Queen => self.queen_moves(used_positions),
       PieceType::Pawn => self.pawn_moves(),
     }
   }
 
-  fn rook_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  fn rook_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     let mut ret = vec![];
     let x = self.x();
     let y = self.y();
@@ -126,7 +126,7 @@ impl Piece {
     return ret;
   }
 
-  fn bishop_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  fn bishop_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     let mut ret = vec![];
     let x = self.x();
     let y = self.y();
@@ -198,8 +198,10 @@ impl Piece {
     return ret;
   }
 
-  fn queen_moves(&self) -> Vec<(u32, u32)> {
-    vec![]
+  fn queen_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    let mut ret = self.bishop_moves(used_positions);
+    ret.append(&mut self.rook_moves(used_positions));
+    return ret;
   }
 
   fn king_moves(&self) -> Vec<(u32, u32)> {

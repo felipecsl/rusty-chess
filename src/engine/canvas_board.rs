@@ -37,7 +37,7 @@ impl CanvasBoardRenderer {
     let selected_piece = self.selected_piece();
     let all_used_positions = all_pieces.iter().map(|p| p.pos).collect();
     let valid_moves = match selected_piece {
-      Some(p) => p.valid_moves(all_used_positions),
+      Some(p) => p.valid_moves(&all_used_positions),
       None => vec![],
     };
     for y in 0..8 {
@@ -111,7 +111,10 @@ impl CanvasBoardRenderer {
   pub fn can_selected_piece_move_to(&self, all_pieces: &Vec<Piece>, x: u32, y: u32) -> bool {
     if let Some(_) = self.selected_piece {
       let all_used_positions = all_pieces.iter().map(|p| p.pos).collect();
-      let valid_moves = self.selected_piece().unwrap().valid_moves(all_used_positions);
+      let valid_moves = self
+        .selected_piece()
+        .unwrap()
+        .valid_moves(&all_used_positions);
       if valid_moves.contains(&(x, y)) {
         return true;
       }
