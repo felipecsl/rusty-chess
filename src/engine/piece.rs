@@ -203,11 +203,21 @@ impl Piece {
   }
 
   fn king_moves(&self) -> Vec<(u32, u32)> {
-    vec![]
+    let x = self.x();
+    let y = self.y();
+    vec![
+      (x - 1, y),
+      (x + 1, y),
+      (x, y - 1),
+      (x, y + 1),
+      (x + 1, y + 1),
+      (x - 1, y - 1),
+      (x - 1, y + 1),
+      (x + 1, y - 1),
+    ]
   }
 
   fn pawn_moves(&self) -> Vec<(u32, u32)> {
-    // TODO: Handle edges of the board and piece collision
     let x = self.x();
     let y = self.y();
     let extra_move = if self.total_moves == 0 { true } else { false };
