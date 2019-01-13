@@ -37,19 +37,24 @@ impl<'a> GameController<'a> {
     let piece = piece_at(&all_pieces_clone, x, y);
     if piece == None {
       if self.renderer.can_selected_piece_move_to(&all_pieces_clone, x, y) {
-        let selected_piece = self.renderer.selected_piece().unwrap();
-        let p = self
-          .all_pieces
-          .iter_mut()
-          .find(|p| p.pos == selected_piece.pos)
-          .unwrap();
-        p.pos = (x, y);
+        self.move_selected_piece_to(x, y);
+        self.renderer.unselect_piece();
       }
     } else {
       self.renderer.select_piece(piece.cloned());
     }
     // Re-draw the board to reflect moved/selected piece
     self.render();
+  }
+
+  fn move_selected_piece_to(&mut self, x: u32, y: u32) {
+    let selected_piece = self.renderer.selected_piece().unwrap();
+    let p = self
+      .all_pieces
+      .iter_mut()
+      .find(|p| p.pos == selected_piece.pos)
+      .unwrap();
+    p.pos = (x, y);
   }
 }
 

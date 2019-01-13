@@ -86,7 +86,44 @@ impl Piece {
   }
 
   fn rook_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {
-    vec![]
+    let mut ret = vec![];
+    let x = self.x();
+    let y = self.y();
+    let mut right_blocked = false;
+    let mut left_blocked = false;
+    let mut top_blocked = false;
+    let mut bottom_blocked = false;
+    for r in 1..8 {
+      let pos_bottom = (x, y + r);
+      if !bottom_blocked {
+        bottom_blocked = used_positions.contains(&pos_bottom);
+        if !bottom_blocked {
+          ret.push(pos_bottom);
+        }
+      }
+      let pos_left = (x - r, y);
+      if !left_blocked {
+        left_blocked = used_positions.contains(&pos_left);
+        if !left_blocked {
+          ret.push(pos_left);
+        }
+      }
+      let pos_right = (x + r, y);
+      if !right_blocked {
+        right_blocked = used_positions.contains(&pos_right);
+        if !right_blocked {
+          ret.push(pos_right);
+        }
+      }
+      let pos_top = (x, y - r);
+      if !top_blocked {
+        top_blocked = used_positions.contains(&pos_top);
+        if !top_blocked {
+          ret.push(pos_top);
+        }
+      }
+    }
+    return ret;
   }
 
   fn bishop_moves(&self, used_positions: Vec<(u32, u32)>) -> Vec<(u32, u32)> {

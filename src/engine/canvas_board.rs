@@ -104,6 +104,10 @@ impl CanvasBoardRenderer {
     }
   }
 
+  pub fn unselect_piece(&mut self) {
+    self.selected_piece = None;
+  }
+
   pub fn can_selected_piece_move_to(&self, all_pieces: &Vec<Piece>, x: u32, y: u32) -> bool {
     if let Some(_) = self.selected_piece {
       let all_used_positions = all_pieces.iter().map(|p| p.pos).collect();
