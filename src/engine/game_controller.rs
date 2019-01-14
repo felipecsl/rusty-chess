@@ -60,7 +60,7 @@ impl<'a> GameController<'a> {
         .iter_mut()
         .find(|p| p.pos == selected_piece.pos)
         .unwrap();
-      p.pos = (x, y);
+      p.move_to(x, y);
     }
     self.renderer.unselect_piece();
     self.current_player_color = if self.current_player_color == Color::White {

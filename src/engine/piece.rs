@@ -62,6 +62,11 @@ impl Piece {
     })
   }
 
+  pub fn move_to(&mut self, x: u32, y: u32) {
+    self.pos = (x, y);
+    self.total_moves += 1;
+  }
+
   pub fn is_black(&self) -> bool {
     self.color == Color::Black
   }
