@@ -14,6 +14,7 @@ static COLOR_1: &str = "#f4d9b0";
 static COLOR_2: &str = "#bc865c";
 static COLOR_SELECTED_1: &str = "#f6fbd3";
 static COLOR_SELECTED_2: &str = "#895329";
+static COLOR_CAPTURE: &str = "#891515";
 
 #[allow(dead_code)]
 pub struct CanvasBoardRenderer {
@@ -40,6 +41,16 @@ impl CanvasBoardRenderer {
       Some(p) => p.valid_moves(&all_used_positions),
       None => vec![],
     };
+    let valid_captures = match selected_piece {
+      Some(p) => {
+        let opponent_positions = all_pieces.iter()
+          .filter(|&p2| p2.color != p.color)
+          .map(|p| p.pos)
+          .collect();
+        p.valid_captures(&opponent_positions)
+      },
+      None => vec![],
+    };
     for y in 0..8 {
       for x in 0..8 {
         let option_1 = (x + y) % 2 == 0;
@@ -55,12 +66,15 @@ impl CanvasBoardRenderer {
         // -> position highlighting rules:
         // 1. only highlight position if it's currently vacant (no piece already there)
         // 2. mark the position of the currently selected piece (if any)
+        // 3. highlight position where a capture can be made
         if (valid_moves.contains(&(x, y)) && piece == None)
           || (piece != None
             && selected_piece != None
             && selected_piece.unwrap().pos == piece.unwrap().pos)
         {
           self.context.set_fill_style(&JsValue::from(color_selected));
+        } else if valid_captures.contains(&(x, y)) {
+          self.context.set_fill_style(&JsValue::from(COLOR_CAPTURE));
         } else {
           self.context.set_fill_style(&JsValue::from(color));
         }

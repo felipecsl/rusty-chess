@@ -79,18 +79,74 @@ impl Piece {
     self.pos.1
   }
 
-  pub fn valid_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  pub fn valid_moves(&self, blocked_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     match self.piece_type {
-      PieceType::Rook => self.rook_moves(used_positions),
-      PieceType::Bishop => self.bishop_moves(used_positions),
+      PieceType::Rook => self.rook_moves(blocked_positions),
+      PieceType::Bishop => self.bishop_moves(blocked_positions),
       PieceType::Knight => self.knight_moves(),
       PieceType::King => self.king_moves(),
-      PieceType::Queen => self.queen_moves(used_positions),
+      PieceType::Queen => self.queen_moves(blocked_positions),
       PieceType::Pawn => self.pawn_moves(),
     }
   }
 
-  fn rook_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  pub fn valid_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    match self.piece_type {
+      PieceType::Rook => self.rook_captures(opponent_positions),
+      PieceType::Bishop => self.bishop_captures(opponent_positions),
+      PieceType::Knight => self.knight_captures(opponent_positions),
+      PieceType::King => self.king_captures(opponent_positions),
+      PieceType::Queen => self.queen_captures(opponent_positions),
+      PieceType::Pawn => self.pawn_captures(opponent_positions),
+    }
+  }
+
+  fn rook_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    vec![]
+  }
+
+  fn bishop_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    vec![]
+  }
+
+  fn knight_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    self.knight_moves()
+      .into_iter()
+      .filter(|&m| opponent_positions.contains(&m))
+      .collect()
+  }
+
+  fn king_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    vec![]
+  }
+
+  fn queen_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    vec![]
+  }
+
+  fn pawn_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    let mut ret = vec![];
+    let x = self.x();
+    let y = self.y();
+    if self.is_black() {
+      if opponent_positions.contains(&(x + 1, y + 1)) {
+        ret.push((x + 1, y + 1));
+      }
+      if opponent_positions.contains(&(x - 1, y + 1)) {
+        ret.push((x - 1, y + 1));
+      }
+    } else {
+      if opponent_positions.contains(&(x + 1, y - 1)) {
+        ret.push((x + 1, y - 1));
+      }
+      if opponent_positions.contains(&(x - 1, y - 1)) {
+        ret.push((x - 1, y - 1));
+      }
+    }
+    return ret;
+  }
+
+  fn rook_moves(&self, blocked_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     let mut ret = vec![];
     let x = self.x();
     let y = self.y();
@@ -101,28 +157,28 @@ impl Piece {
     for r in 1..8 {
       let pos_bottom = (x, y + r);
       if !bottom_blocked {
-        bottom_blocked = used_positions.contains(&pos_bottom);
+        bottom_blocked = blocked_positions.contains(&pos_bottom);
         if !bottom_blocked {
           ret.push(pos_bottom);
         }
       }
       let pos_left = (x - r, y);
       if !left_blocked {
-        left_blocked = used_positions.contains(&pos_left);
+        left_blocked = blocked_positions.contains(&pos_left);
         if !left_blocked {
           ret.push(pos_left);
         }
       }
       let pos_right = (x + r, y);
       if !right_blocked {
-        right_blocked = used_positions.contains(&pos_right);
+        right_blocked = blocked_positions.contains(&pos_right);
         if !right_blocked {
           ret.push(pos_right);
         }
       }
       let pos_top = (x, y - r);
       if !top_blocked {
-        top_blocked = used_positions.contains(&pos_top);
+        top_blocked = blocked_positions.contains(&pos_top);
         if !top_blocked {
           ret.push(pos_top);
         }
@@ -131,7 +187,7 @@ impl Piece {
     return ret;
   }
 
-  fn bishop_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  fn bishop_moves(&self, blocked_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
     let mut ret = vec![];
     let x = self.x();
     let y = self.y();
@@ -142,28 +198,28 @@ impl Piece {
     for r in 1..8 {
       let pos_bottom_right = (x + r, y + r);
       if !bottom_right_blocked {
-        bottom_right_blocked = used_positions.contains(&pos_bottom_right);
+        bottom_right_blocked = blocked_positions.contains(&pos_bottom_right);
         if !bottom_right_blocked {
           ret.push(pos_bottom_right);
         }
       }
       let pos_bottom_left = (x - r, y + r);
       if !bottom_left_blocked {
-        bottom_left_blocked = used_positions.contains(&pos_bottom_left);
+        bottom_left_blocked = blocked_positions.contains(&pos_bottom_left);
         if !bottom_left_blocked {
           ret.push(pos_bottom_left);
         }
       }
       let pos_top_right = (x + r, y - r);
       if !top_right_blocked {
-        top_right_blocked = used_positions.contains(&pos_top_right);
+        top_right_blocked = blocked_positions.contains(&pos_top_right);
         if !top_right_blocked {
           ret.push(pos_top_right);
         }
       }
       let pos_top_left = (x - r, y - r);
       if !top_left_blocked {
-        top_left_blocked = used_positions.contains(&pos_top_left);
+        top_left_blocked = blocked_positions.contains(&pos_top_left);
         if !top_left_blocked {
           ret.push(pos_top_left);
         }
@@ -203,9 +259,9 @@ impl Piece {
     return ret;
   }
 
-  fn queen_moves(&self, used_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
-    let mut ret = self.bishop_moves(used_positions);
-    ret.append(&mut self.rook_moves(used_positions));
+  fn queen_moves(&self, blocked_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+    let mut ret = self.bishop_moves(blocked_positions);
+    ret.append(&mut self.rook_moves(blocked_positions));
     return ret;
   }
 
