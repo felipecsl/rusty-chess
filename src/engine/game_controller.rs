@@ -10,6 +10,7 @@ use engine::player::Player;
 
 pub struct GameController<'a> {
   renderer: &'a mut CanvasBoardRenderer,
+  current_player_color: Color,
   player1: Player,
   player2: Player,
   all_pieces: Vec<Piece>,
@@ -22,6 +23,7 @@ impl<'a> GameController<'a> {
     let all_pieces = all_pieces();
     GameController {
       renderer,
+      current_player_color: Color::White,
       player1,
       player2,
       all_pieces,
@@ -42,7 +44,8 @@ impl<'a> GameController<'a> {
       {
         self.move_selected_piece_to(x, y);
       }
-    } else {
+    } else if self.current_player_color == piece.unwrap().color {
+      // make sure the piece we're moving matches the player color who's currently moving
       self.renderer.select_piece(piece.cloned());
     }
     // Re-draw the board to reflect moved/selected piece
@@ -60,6 +63,11 @@ impl<'a> GameController<'a> {
       p.pos = (x, y);
     }
     self.renderer.unselect_piece();
+    self.current_player_color = if self.current_player_color == Color::White {
+      Color::Black
+    } else {
+      Color::White
+    };
   }
 }
 
