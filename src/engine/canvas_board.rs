@@ -12,8 +12,8 @@ use self::web_sys::CanvasRenderingContext2d;
 
 static COLOR_1: &str = "#f4d9b0";
 static COLOR_2: &str = "#bc865c";
-static COLOR_SELECTED_1: &str = "#f6fbd3";
-static COLOR_SELECTED_2: &str = "#895329";
+static COLOR_SELECTED_1: &str = "rgba(0, 200, 0, 0.2)";
+static COLOR_SELECTED_2: &str = "rgba(0, 200, 0, 0.2)";
 static COLOR_CAPTURE: &str = "#891515";
 
 #[allow(dead_code)]

@@ -1,15 +1,18 @@
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use engine::canvas_board::piece_at;
 use engine::canvas_board::CanvasBoardRenderer;
+use engine::canvas_board::piece_at;
 use engine::piece::Color;
 use engine::piece::Piece;
 use engine::piece::PieceType;
 use engine::player::Player;
 
+use self::web_sys::HtmlTextAreaElement;
+
 pub struct GameController<'a> {
   renderer: &'a mut CanvasBoardRenderer,
+  status: HtmlTextAreaElement,
   current_player_color: Color,
   player1: Player,
   player2: Player,
@@ -17,12 +20,16 @@ pub struct GameController<'a> {
 }
 
 impl<'a> GameController<'a> {
-  pub fn new(renderer: &'a mut CanvasBoardRenderer) -> GameController<'a> {
+  pub fn new(
+    renderer: &'a mut CanvasBoardRenderer,
+    status: HtmlTextAreaElement,
+  ) -> GameController<'a> {
     let player1 = Player::new(Color::Black);
     let player2 = Player::new(Color::White);
     let all_pieces = all_pieces();
     GameController {
       renderer,
+      status,
       current_player_color: Color::White,
       player1,
       player2,
@@ -42,6 +49,11 @@ impl<'a> GameController<'a> {
         .renderer
         .can_selected_piece_move_to(&all_pieces_clone, x, y)
       {
+        {
+          let piece = self.renderer.selected_piece().unwrap();
+          self.status.set_value(&format!(
+            "Moving {:?} to {:?}{}{}", piece, (x, y), "\n", self.status.value()));
+        }
         self.move_selected_piece_to(x, y);
       }
     } else if self.current_player_color == piece.unwrap().color {

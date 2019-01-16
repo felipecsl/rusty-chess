@@ -12,6 +12,7 @@ use self::wasm_bindgen::JsCast;
 use self::web_sys::CanvasRenderingContext2d;
 use self::web_sys::Document;
 use self::web_sys::HtmlCanvasElement;
+use self::web_sys::HtmlTextAreaElement;
 use self::web_sys::MouseEvent;
 
 mod engine;
@@ -53,11 +54,12 @@ static PIECE_SIZE: f64 = CANVAS_SIZE / 10.0;
 #[wasm_bindgen(start)]
 pub fn start() {
   let document = web_sys::window().unwrap().document().unwrap();
-  let canvas = get_canvas(&document);
+  let canvas = get_canvas_element(&document);
+  let status = get_status_element(&document);
   let context = init_context(&canvas);
   let renderer = Box::new(CanvasBoardRenderer::new(context));
   let renderer_ref = Box::leak(renderer);
-  let controller = GameController::new(renderer_ref);
+  let controller = GameController::new(renderer_ref, status);
   controller.render();
   let func = new_onclick_event(controller);
   let closure = Closure::wrap(func);
@@ -80,10 +82,18 @@ fn add_click_handler(canvas: &HtmlCanvasElement, closure: Closure<dyn FnMut(Mous
   closure.forget();
 }
 
-fn get_canvas(document: &Document) -> HtmlCanvasElement {
+fn get_canvas_element(document: &Document) -> HtmlCanvasElement {
   let element = document.get_element_by_id("canvas").unwrap();
   element
     .dyn_into::<HtmlCanvasElement>()
+    .map_err(|_| ())
+    .unwrap()
+}
+
+fn get_status_element(document: &Document) -> HtmlTextAreaElement {
+  let element = document.get_element_by_id("status").unwrap();
+  element
+    .dyn_into::<HtmlTextAreaElement>()
     .map_err(|_| ())
     .unwrap()
 }
