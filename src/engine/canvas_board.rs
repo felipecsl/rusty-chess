@@ -43,12 +43,13 @@ impl CanvasBoardRenderer {
     };
     let valid_captures = match selected_piece {
       Some(p) => {
-        let opponent_positions = all_pieces.iter()
+        let opponent_positions = all_pieces
+          .iter()
           .filter(|&p2| p2.color != p.color)
           .map(|p| p.pos)
           .collect();
         p.valid_captures(&opponent_positions)
-      },
+      }
       None => vec![],
     };
     for y in 0..8 {

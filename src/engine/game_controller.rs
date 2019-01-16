@@ -1,8 +1,8 @@
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use engine::canvas_board::CanvasBoardRenderer;
 use engine::canvas_board::piece_at;
+use engine::canvas_board::CanvasBoardRenderer;
 use engine::piece::Color;
 use engine::piece::Piece;
 use engine::piece::PieceType;
@@ -51,10 +51,10 @@ impl<'a> GameController<'a> {
       {
         {
           let piece = self.renderer.selected_piece().unwrap();
-          self.status.set_value(&format!(
-            "Moving {:?} to {:?}{}{}", piece, (x, y), "\n", self.status.value()));
+          self.append_log(&format!("Moving {:?} to {:?}", piece, (x, y)));
         }
         self.move_selected_piece_to(x, y);
+        self.append_log(&format!("Next turn {:?}", self.current_player_color));
       }
     } else if self.current_player_color == piece.unwrap().color {
       // make sure the piece we're moving matches the player color who's currently moving
@@ -62,6 +62,12 @@ impl<'a> GameController<'a> {
     }
     // Re-draw the board to reflect moved/selected piece
     self.render();
+  }
+
+  fn append_log(&self, text: &str) {
+    self
+      .status
+      .set_value(&format!("{}{}{}", text, "\n", self.status.value()));
   }
 
   fn move_selected_piece_to(&mut self, x: u32, y: u32) {

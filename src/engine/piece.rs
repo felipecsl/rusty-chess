@@ -110,7 +110,8 @@ impl Piece {
   }
 
   fn knight_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
-    self.knight_moves()
+    self
+      .knight_moves()
       .into_iter()
       .filter(|&m| opponent_positions.contains(&m))
       .collect()
