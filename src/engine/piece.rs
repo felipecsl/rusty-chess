@@ -90,10 +90,14 @@ impl Piece {
     }
   }
 
-  pub fn valid_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  pub fn valid_captures(
+    &self,
+    opponent_positions: &Vec<(u32, u32)>,
+    friendly_positions: &Vec<(u32, u32)>,
+  ) -> Vec<(u32, u32)> {
     match self.piece_type {
       PieceType::Rook => self.rook_captures(opponent_positions),
-      PieceType::Bishop => self.bishop_captures(opponent_positions),
+      PieceType::Bishop => self.bishop_captures(opponent_positions, friendly_positions),
       PieceType::Knight => self.knight_captures(opponent_positions),
       PieceType::King => self.king_captures(opponent_positions),
       PieceType::Queen => self.queen_captures(opponent_positions),
@@ -105,8 +109,61 @@ impl Piece {
     vec![]
   }
 
-  fn bishop_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
-    vec![]
+  fn bishop_captures(
+    &self,
+    opponent_positions: &Vec<(u32, u32)>,
+    friendly_positions: &Vec<(u32, u32)>,
+  ) -> Vec<(u32, u32)> {
+    let mut ret = vec![];
+    let x = self.x();
+    let y = self.y();
+    let mut bottom_right_blocked = false;
+    let mut bottom_left_blocked = false;
+    let mut top_right_blocked = false;
+    let mut top_left_blocked = false;
+    for r in 1..8 {
+      let pos_bottom_right = (x + r, y + r);
+      if !bottom_right_blocked {
+        let opponent_found = opponent_positions.contains(&pos_bottom_right);
+        bottom_right_blocked = if opponent_found {
+          ret.push(pos_bottom_right);
+          true
+        } else {
+          friendly_positions.contains(&pos_bottom_right)
+        }
+      }
+      let pos_bottom_left = (x - r, y + r);
+      if !bottom_left_blocked {
+        let opponent_found = opponent_positions.contains(&pos_bottom_left);
+        bottom_left_blocked = if opponent_found {
+          ret.push(pos_bottom_left);
+          true
+        } else {
+          friendly_positions.contains(&pos_bottom_left)
+        }
+      }
+      let pos_top_right = (x + r, y - r);
+      if !top_right_blocked {
+        let opponent_found = opponent_positions.contains(&pos_top_right);
+        top_right_blocked = if opponent_found {
+          ret.push(pos_top_right);
+          true
+        } else {
+          friendly_positions.contains(&pos_top_right)
+        }
+      }
+      let pos_top_left = (x - r, y - r);
+      if !top_left_blocked {
+        let opponent_found = opponent_positions.contains(&pos_top_left);
+        top_left_blocked = if opponent_found {
+          ret.push(pos_top_left);
+          true
+        } else {
+          friendly_positions.contains(&pos_top_left)
+        }
+      }
+    }
+    return ret;
   }
 
   fn knight_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {

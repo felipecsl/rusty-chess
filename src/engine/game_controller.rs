@@ -1,8 +1,8 @@
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use engine::canvas_board::piece_at;
 use engine::canvas_board::CanvasBoardRenderer;
+use engine::canvas_board::piece_at;
 use engine::piece::Color;
 use engine::piece::Piece;
 use engine::piece::PieceType;
@@ -42,26 +42,55 @@ impl<'a> GameController<'a> {
   }
 
   pub fn handle_click_at(&mut self, x: u32, y: u32) {
-    let all_pieces_clone = self.all_pieces.clone();
-    let piece = piece_at(&all_pieces_clone, x, y);
-    if piece == None {
-      if self
-        .renderer
-        .can_selected_piece_move_to(&all_pieces_clone, x, y)
-      {
-        {
-          let piece = self.renderer.selected_piece().unwrap();
-          self.append_log(&format!("Moving {:?} to {:?}", piece, (x, y)));
-        }
-        self.move_selected_piece_to(x, y);
-        self.append_log(&format!("Next turn {:?}", self.current_player_color));
-      }
-    } else if self.current_player_color == piece.unwrap().color {
-      // make sure the piece we're moving matches the player color who's currently moving
-      self.renderer.select_piece(piece.cloned());
+    let all_pieces = self.all_pieces.clone();
+    let target_piece = piece_at(&all_pieces, x, y);
+    if target_piece == None {
+      // destination is "empty", just try to move if that's a valid move for the selected piece
+      self.maybe_move(&all_pieces, x, y);
+    } else if self.is_capture(target_piece) {
+      // we're capturing a piece
+      self.maybe_move_and_capture(&all_pieces, target_piece.unwrap(), x, y);
+    } else if self.current_player_color == target_piece.unwrap().color {
+      // select a new piece
+      // make sure the piece we're selecting matches the player color who's currently playing
+      self.renderer.select_piece(target_piece.cloned());
     }
     // Re-draw the board to reflect moved/selected piece
     self.render();
+  }
+
+  /** Are we trying to capture an enemy piece? */
+  fn is_capture(&self, target_piece: Option<&Piece>) -> bool {
+    let selected_piece = self.renderer.selected_piece();
+    selected_piece != None
+      && target_piece != selected_piece
+      && target_piece.unwrap().color != selected_piece.unwrap().color
+  }
+
+  fn maybe_move_and_capture(&mut self, all_pieces: &Vec<Piece>, target_piece: &Piece, x: u32, y: u32) {
+    if self.renderer.can_selected_piece_move_or_capture_to(all_pieces, x, y) {
+      self.move_selected_piece_to(x, y);
+      self.remove_piece_from_board(target_piece);
+      self.append_log(&format!("Piece captured {:?}", target_piece));
+      self.append_log(&format!("Next turn {:?}", self.current_player_color));
+    }
+  }
+
+  fn remove_piece_from_board(&mut self, piece: &Piece) {
+    if let Some(pos) = self.all_pieces.iter().position(|x| *x == *piece) {
+      self.all_pieces.remove(pos);
+    }
+  }
+
+  fn maybe_move(&mut self, all_pieces: &Vec<Piece>, x: u32, y: u32) {
+    if self.renderer.can_selected_piece_move_or_capture_to(all_pieces, x, y) {
+      {
+        let piece = self.renderer.selected_piece().unwrap();
+        self.append_log(&format!("Moving {:?} to {:?}", piece, (x, y)));
+      }
+      self.move_selected_piece_to(x, y);
+      self.append_log(&format!("Next turn {:?}", self.current_player_color));
+    }
   }
 
   fn append_log(&self, text: &str) {

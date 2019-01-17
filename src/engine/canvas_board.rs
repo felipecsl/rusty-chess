@@ -9,6 +9,7 @@ use SQUARE_SIZE;
 
 use self::wasm_bindgen::prelude::*;
 use self::web_sys::CanvasRenderingContext2d;
+use engine::piece::Color;
 
 static COLOR_1: &str = "#f4d9b0";
 static COLOR_2: &str = "#bc865c";
@@ -42,14 +43,10 @@ impl CanvasBoardRenderer {
       None => vec![],
     };
     let valid_captures = match selected_piece {
-      Some(p) => {
-        let opponent_positions = all_pieces
-          .iter()
-          .filter(|&p2| p2.color != p.color)
-          .map(|p| p.pos)
-          .collect();
-        p.valid_captures(&opponent_positions)
-      }
+      Some(p) => p.valid_captures(
+        &positions_by_color(&all_pieces, other_color(p.color)),
+        &positions_by_color(&all_pieces, p.color)
+      ),
       None => vec![],
     };
     for y in 0..8 {
@@ -79,6 +76,7 @@ impl CanvasBoardRenderer {
         } else {
           self.context.set_fill_style(&JsValue::from(color));
         }
+        //        self.context.clear_rect(x_pos, y_pos, SQUARE_SIZE, SQUARE_SIZE);
         self
           .context
           .fill_rect(x_pos, y_pos, SQUARE_SIZE, SQUARE_SIZE);
@@ -123,18 +121,38 @@ impl CanvasBoardRenderer {
     self.selected_piece = None;
   }
 
-  pub fn can_selected_piece_move_to(&self, all_pieces: &Vec<Piece>, x: u32, y: u32) -> bool {
-    if let Some(_) = self.selected_piece {
+  pub fn can_selected_piece_move_or_capture_to(&self, all_pieces: &Vec<Piece>, x: u32, y: u32) -> bool {
+    if let Some(ref p) = self.selected_piece {
       let all_used_positions = all_pieces.iter().map(|p| p.pos).collect();
-      let valid_moves = self
-        .selected_piece()
-        .unwrap()
-        .valid_moves(&all_used_positions);
+      let valid_moves = p.valid_moves(&all_used_positions);
       if valid_moves.contains(&(x, y)) {
+        return true;
+      }
+      let opponent_positions = positions_by_color(all_pieces, other_color(p.color));
+      let friendly_positions = positions_by_color(all_pieces, p.color);
+      let valid_captures = p.valid_captures(&opponent_positions, &friendly_positions);
+      if valid_captures.contains(&(x, y)) {
         return true;
       }
     }
     return false;
+  }
+}
+
+/** Returns the positions of all pieces of the given color */
+fn positions_by_color(all_pieces: &Vec<Piece>, color: Color) -> Vec<(u32, u32)> {
+  all_pieces
+    .iter()
+    .filter(|&p| p.color == color)
+    .map(|p| p.pos)
+    .collect()
+}
+
+fn other_color(color: Color) -> Color {
+  if color == Color::Black {
+    Color::White
+  } else {
+    Color::Black
   }
 }
 
