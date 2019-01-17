@@ -96,16 +96,20 @@ impl Piece {
     friendly_positions: &Vec<(u32, u32)>,
   ) -> Vec<(u32, u32)> {
     match self.piece_type {
-      PieceType::Rook => self.rook_captures(opponent_positions),
+      PieceType::Rook => self.rook_captures(opponent_positions, friendly_positions),
       PieceType::Bishop => self.bishop_captures(opponent_positions, friendly_positions),
       PieceType::Knight => self.knight_captures(opponent_positions),
       PieceType::King => self.king_captures(opponent_positions),
-      PieceType::Queen => self.queen_captures(opponent_positions),
+      PieceType::Queen => self.queen_captures(opponent_positions, friendly_positions),
       PieceType::Pawn => self.pawn_captures(opponent_positions),
     }
   }
 
-  fn rook_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  fn rook_captures(
+    &self,
+    opponent_positions: &Vec<(u32, u32)>,
+    friendly_positions: &Vec<(u32, u32)>,
+  ) -> Vec<(u32, u32)> {
     vec![]
   }
 
@@ -178,7 +182,11 @@ impl Piece {
     vec![]
   }
 
-  fn queen_captures(&self, opponent_positions: &Vec<(u32, u32)>) -> Vec<(u32, u32)> {
+  fn queen_captures(
+    &self,
+    opponent_positions: &Vec<(u32, u32)>,
+    friendly_positions: &Vec<(u32, u32)>,
+  ) -> Vec<(u32, u32)> {
     vec![]
   }
 
