@@ -18,6 +18,7 @@ A chess game written in Rust that runs in the browser.
 To start the web app, run:
 
 ```
+cd web/
 npm start
 ```
 
